@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@800"
+      rel="stylesheet"
+    />
+    <link
+      href="https://codepen.io/GreenSock/pen/xxmzBrw.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://assets.codepen.io/16327/Flip.min.js"></script>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- 這樣設定就可以從 Title 從 webpack.config.js 設定 -->
+  </head>
+  <body>
+    <!-- <script src="index.js" type="module"></script> -->
+    <div class="spacer">scroll down</div>
+    <div class="main">
+      <div class="container initial">
+        <div class="box gradient-blue"></div>
+      </div>
+      <div class="container second">
+        <div class="marker"></div>
+      </div>
+      <div class="container third">
+        <div class="marker"></div>
+      </div>
+    </div>
+
+    <div class="spacer final"></div>
+  </body>
+</html>
