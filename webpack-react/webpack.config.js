@@ -2,6 +2,8 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
   entry: './src/index.js',
   output: {
@@ -18,11 +20,25 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: isProduction
+          ? [MiniCssExtractPlugin.loader, 'css-loader']
+          : ['style-loader', 'css-loader'], // Style loader 預設開啟 hmr
+      },
+      {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
       },
     ],
   },
   optimization: {
     minimizer: [new CssMinimizerPlugin()],
+  },
+  devServer: {
+    hot: !isProduction,
+    compress: isProduction,
+    port: 3000,
   },
 };

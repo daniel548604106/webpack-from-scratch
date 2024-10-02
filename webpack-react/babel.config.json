@@ -1,0 +1,4 @@
+{
+  // 做到 transform jsx plugin-transform-react-jsx
+  "presets": [["@babel/preset-env"], "@babel/preset-react"]
+}

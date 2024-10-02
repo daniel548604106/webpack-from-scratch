@@ -6,6 +6,25 @@ webpack actually "transpiles" the code so that older browsers can also run it
 npm install webpack webpack-cli --save-dev
 ```
 
+- 設定 devServer
+  https://awdr74100.github.io/2020-03-26-webpack-webpackdevserver/
+
+```
+npm install --save-dev webpack-dev-server
+
+```
+
+```
+ devServer: {
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
+    port: 3000,
+  },
+
+```
+
 - 建立 /dist/index.html，同時引入 <script src="main.js">
 
 - 執行 build
@@ -38,3 +57,25 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 ```
 
 - Install React & React-DOM
+
+```
+npm i react react-dom
+```
+
+- Install Babel
+  https://babeljs.io/docs/babel-preset-react
+  https://babeljs.io/setup#installation
+
+```
+npm install --save-dev @babel/preset-react
+npm install --save-dev babel-loader @babel/core
+
+```
+
+這時候就可以發現 react 有被 mount 在 index.html 上了! 成功，接著要加上 HMR
+
+- Install React-router-dom
+
+```
+npm i react-router-dom
+```

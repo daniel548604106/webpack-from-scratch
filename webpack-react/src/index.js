@@ -1,13 +1,9 @@
-import _ from 'lodash';
+import React from 'react';
+import App from './app';
 import './styles.css';
-function component() {
-  const element = document.createElement('div');
 
-  // Lodash, currently included via a script, is required for this line to work
-  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
-  element.classList.add('hello');
+import { createRoot } from 'react-dom/client';
 
-  return element;
-}
-
-document.body.appendChild(component());
+const container = document.getElementById('app');
+const root = createRoot(container);
+root.render(<App />);
