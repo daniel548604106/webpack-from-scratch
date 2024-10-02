@@ -82,3 +82,57 @@ npm i react-router-dom
 
 嘗試使用 module.css 目前失敗
 https://ithelp.ithome.com.tw/m/articles/10326458
+
+- Dynamic import
+  因為看到有寫 bundle size can impacty web performance ，所以想說來做 dynamic import，其實也很簡單， webpack 不用作其他事情，只需要動 react 加上 React.lazy ，同時因為他是 async 的，最外層要加上 Susepense 包住，不然會壞掉，打包出來就會分不同路徑有 42.main.js , 978.main.js 等等，原本的 main.js 變成 450kb 使用 webpack-bundle-analyzer 查看後發現真的都是 node_modules 內的 react-router-dom , react-dom ，這些大小蠻大的
+
+嘗試想要解決 vendor bundle，加上以下這十會報錯，`Conflict: Multiple chunks emit assets to the same filename main.js (chunks 792 and 887)`，原因是 output 的 filename 都叫做 main.js，修改一下改成 [name].bundle.js，先看 build 出來會是什麼，會變成 887.bundle.js(原本的 node_modules 那一包) & main.bundle.js
+
+https://blog.jakoblind.no/code-split-vendors-with-webpack-for-faster-load-speed/
+
+```
+optimization:{
+ splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+}
+
+```
+
+```
+ output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+```
+
+Webpack 真的很聰明，打包成 vendors & main bundle 後，他在 html 內都會自己加上去
+
+```
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Getting Started</title>
+    <script src="https://unpkg.com/lodash@4.17.20"></script>
+    <script
+      defer="defer"
+      src="vendors.85dc81109eb33e2cb29e.js?5ee7b22d3e38d4433c0e"
+    ></script>
+    <script
+      defer="defer"
+      src="main.1491be2e917e629cb0a7.js?5ee7b22d3e38d4433c0e"
+    ></script>
+  </head>
+  <body>
+    <div id="app" />
+  </body>
+</html>
+
+```

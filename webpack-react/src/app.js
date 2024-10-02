@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
-import Home from './routes/home/index.jsx';
-import About from './routes/about/index.jsx';
+const Home = React.lazy(() => import('./routes/home/index.jsx'));
+const About = React.lazy(() => import('./routes/about/index.jsx'));
 // Last , install react-router-dom
 import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom';
 
@@ -17,7 +17,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 };
 
 export default App;

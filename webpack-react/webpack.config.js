@@ -1,13 +1,17 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer'); // Build 時就會產生 bundle analyzer
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: 'main.js',
+    // filename: 'main.js',
+    // filename: '[name].bundle.js',
+    filename: '[name].[contenthash].js', // filename 設定 contenthash 可以方便後面使用 cache
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
@@ -15,6 +19,18 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
+    // 創建實例 (第二步) 配置 HTML 模板路徑與生成名稱
+    new HtmlWebpackPlugin({
+      inject: true, // 預設為 true
+      hash: true,
+      title: 'Webpack Example App',
+      header: 'Webpack Example Title',
+      metaDesc: 'Webpack Example Description',
+      template: './public/index.html', // 每次 build 出來的 index.html 都是以這個當作基底
+      filename: 'index.html',
+      //   inject: 'body',
+    }),
+    new BundleAnalyzerPlugin(),
   ],
   module: {
     rules: [
@@ -67,6 +83,15 @@ module.exports = {
   },
   optimization: {
     minimizer: [new CssMinimizerPlugin()],
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
   },
   devServer: {
     hot: !isProduction,
