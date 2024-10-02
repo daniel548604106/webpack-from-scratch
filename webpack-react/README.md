@@ -89,6 +89,20 @@ https://ithelp.ithome.com.tw/m/articles/10326458
 嘗試想要解決 vendor bundle，加上以下這十會報錯，`Conflict: Multiple chunks emit assets to the same filename main.js (chunks 792 and 887)`，原因是 output 的 filename 都叫做 main.js，修改一下改成 [name].bundle.js，先看 build 出來會是什麼，會變成 887.bundle.js(原本的 node_modules 那一包) & main.bundle.js
 
 https://blog.jakoblind.no/code-split-vendors-with-webpack-for-faster-load-speed/
+https://medium.com/@AbbasPlusPlus/bundle-splitting-in-webpack-optimizing-for-performance-eb7f16803910
+https://www.linkedin.com/pulse/webpack-vendor-caching-anshul-parmar/
+
+通常分成 vendor bundle 就是因為 node_modules 內的檔案不會這麼常改變，很適合用來快取，因為有 contentHash 所以只要 node_modules 裡面沒有更動，他的 hash 應該就要是一樣的，放在 browser or cdn cache 就很適合
+
+- During development, bundling vendor code separately can reduce the time it takes to re-bundle and deploy updates. Since vendor code rarely changes, the focus is on re-bundling the frequently changing application code.
+- By moving third-party libraries to a separate bundle, the application bundle becomes smaller, resulting in faster downloads and shorter time-to-interactive (TTI). This is especially noticeable for large apps with many dependencies.
+- Splitting allows the browser to download the vendor bundle and application bundle in parallel. This optimizes the use of network resources, reducing overall load time.
+
+https://dev.to/pffigueiredo/splitting-and-caching-react-chunks-4c0c
+https://medium.com/@chesterhow/code-splitting-and-browser-caching-with-webpack-2b2006841684
+
+Next.js 預設已經做了這件事情
+https://web.dev/articles/granular-chunking-nextjs?hl=zh-tw
 
 ```
 optimization:{
@@ -134,5 +148,40 @@ Webpack 真的很聰明，打包成 vendors & main bundle 後，他在 html 內�
     <div id="app" />
   </body>
 </html>
+
+```
+
+有了 vendor bundle 就可以設定
+
+1. Cache-control headers，讓瀏覽器進行快取
+
+```
+Cache-Control: public, max-age=31536000, immutable
+
+```
+
+- public: Indicates the response is cacheable by any cache.
+- max-age=31536000: Instructs the browser to cache the file for one year (in seconds).
+- immutable: Tells the browser that the file won't change during the cache duration, so no need to check for updates.
+
+2. Service Workers
+
+```
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open('vendor-v1').then((cache) => {
+      return cache.addAll(['/vendor.[contenthash].js']);
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+
 
 ```
