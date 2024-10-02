@@ -20,12 +20,44 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
+        exclude: /\.module\.css$/,
         use: isProduction
-          ? [MiniCssExtractPlugin.loader, 'css-loader']
-          : ['style-loader', 'css-loader'], // Style loader 預設開啟 hmr
+          ? [MiniCssExtractPlugin.loader, { loader: 'css-loader' }]
+          : [
+              { loader: 'style-loader' }, // Style loader 預設開啟 hmr
+              { loader: 'css-loader' },
+            ],
       },
       {
-        test: /\.m?js$/,
+        test: /\.module\.css$/,
+        use: isProduction
+          ? [
+              MiniCssExtractPlugin.loader,
+              {
+                loader: 'css-loader',
+                options: {
+                  modules: {
+                    mode: 'local',
+                    localIdentName: '[file]__[local]__[hash:6]',
+                  },
+                },
+              },
+            ]
+          : [
+              { loader: 'style-loader' }, // Style loader 預設開啟 hmr
+              {
+                loader: 'css-loader',
+                options: {
+                  modules: {
+                    mode: 'local',
+                    localIdentName: '[file]__[local]__[hash:6]',
+                  },
+                },
+              },
+            ],
+      },
+      {
+        test: /\.m?(js|jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',

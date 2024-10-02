@@ -1,8 +1,23 @@
 import React from 'react';
 
+import Home from './routes/home/index.jsx';
+import About from './routes/about/index.jsx';
+// Last , install react-router-dom
+import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/about',
+    element: <About />,
+  },
+]);
+
 const App = () => {
-  const [counter, setCounter] = useState(0);
-  return <div onClick={setCounter(counter + 1)}>App{counter}</div>;
+  return <RouterProvider router={router} />;
 };
 
 export default App;
